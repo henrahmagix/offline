@@ -1,0 +1,13 @@
+{
+  "name": "offline-demo",
+  "resolutions": {
+    "angular": "1.5.8"
+  },
+  "dependencies": {
+    "angular": "1.5.8",
+    "angular-mocks": "1.5.8",
+    "angular-cache": "4.6.0",
+    "angular-offline": "0.1.0",
+    "angular-route": "^1.5.8"
+  }
+}
