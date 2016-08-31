@@ -56,7 +56,7 @@
                         this.result = response.data;
                     }.bind(this))
                     .catch(function (error) {
-                        console.error(error);
+                        console.error(error.message);
                     }.bind(this));
             };
         }
