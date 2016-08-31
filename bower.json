@@ -7,7 +7,7 @@
     "angular": "1.5.8",
     "angular-mocks": "1.5.8",
     "angular-cache": "4.6.0",
-    "angular-offline": "0.1.0",
+    "angular-offline": "henrahmagix/angular-offline#d476a3832e24c7a2e242b9c3f3401bec4c0f356a",
     "angular-route": "^1.5.8"
   }
 }

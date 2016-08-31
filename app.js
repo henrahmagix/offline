@@ -46,17 +46,39 @@
 
     app.component('clickPost', {
         template: '<button ng-click="$ctrl.post()">Click to post</button><p>Result: {{$ctrl.result}}, count: {{$ctrl.counter}}</p>',
-        controller: function ClickPostCtrl ($http) {
+        controller: function ClickPostCtrl ($http, $rootScope, offline) {
             this.counter = 0;
             this.post = function () {
                 this.counter++;
-                const data = {data: 'some data', counter: this.counter};
+                const counter = this.counter;
+                const data = {data: 'some data', counter};
+
+                const dataResolve = function (data) {
+                    console.log('dataResolve', data);
+                    this.result = data;
+                }.bind(this);
+
+                console.log('posting...', counter);
                 $http.post('/post', data, {offline: true})
+
                     .then(function (response) {
-                        this.result = response.data;
+                        console.log('post success', counter, response);
+                        // this.result = response.data;
+                        dataResolve(response.data);
                     }.bind(this))
+
                     .catch(function (error) {
+                        console.log('post error', counter, error.message);
                         console.error(error.message);
+                        if (error.message === offline.ERRORS.REQUEST_QUEUED) {
+                            $rootScope.$on('offline-request:success', function ($event, response, request) {
+                                console.log(arguments);
+                                console.log('process request success', counter, request.data.counter, request);
+                                if (request.data.counter === counter) {
+                                    return dataResolve(response.data);
+                                }
+                            }.bind(this));
+                        }
                     }.bind(this));
             };
         }
