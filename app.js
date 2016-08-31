@@ -11,18 +11,7 @@
         $routeProvider,
         offlineProvider
     ) {
-
-        window.isOnline = true;
-        $provide.decorator('connectionStatus', function ($delegate) {
-            $delegate.isOnline = function () {
-                console.log('isOnline', window.isOnline);
-                return window.isOnline;
-            };
-            return $delegate;
-        });
-
         offlineProvider.debug(true);
-
         $routeProvider.when('/', {
             template: '' +
                 '<click-get></click-get>' +
@@ -30,7 +19,6 @@
                 '<online></online>' +
             ''
         });
-
     });
 
     app.run(function (
