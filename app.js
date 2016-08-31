@@ -24,11 +24,11 @@
         offlineProvider.debug(true);
 
         $routeProvider.when('/', {
-            template: `
-                <click-get></click-get>
-                <click-post></click-post>
-                <online></online>
-            `
+            template: '' +
+                '<click-get></click-get>' +
+                '<click-post></click-post>' +
+                '<online></online>' +
+            ''
         });
 
     });
@@ -38,9 +38,9 @@
         CacheFactory,
         offline
     ) {
+        $http.defaults.cache = CacheFactory.createCache('offline.get', {storageMode: 'localStorage'});
+        offline.stackCache = CacheFactory.createCache('offline.post', {storageMode: 'localStorage'});
         offline.start($http);
-        window.getcache = $http.defaults.cache = CacheFactory.createCache('offline.get');
-        window.postcache = offline.stackCache = CacheFactory.createCache('offline.post');
     });
 
     app.component('clickGet', {
@@ -49,7 +49,9 @@
             this.counter = 0;
             this.get = function () {
                 this.counter++;
-                $http.get('/get.json').then(response => this.result = response.data);
+                $http.get('/get.json', {offline: true}).then(function (response) {
+                    this.result = response.data
+                }.bind(this));
             };
         }
     });
@@ -60,46 +62,47 @@
             this.counter = 0;
             this.post = function () {
                 this.counter++;
-                $http.post('/post', {}).then(response => this.result = response.data);
+                const data = {data: 'some data', counter: this.counter};
+                $http.post('/post', data, {offline: true})
+                    .then(function (response) {
+                        this.result = response.data;
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.error(error);
+                    }.bind(this));
             };
         }
     });
 
-    app.directive('online', function () {
-        return {
-            template: `
-                <button class="toggle">Click to toggle online</button>
-                <button class="trigger">Click to trigger online</button>
-                <p>Online: {{$ctrl.online}}, count: {{$ctrl.counter}}</p>
-            `,
-            controller: function ClickPostCtrl ($http) {
-                this.counter = 0;
-                this.toggle = function () {
-                    console.log('toggle');
-                    this.counter++;
-                    window.isOnline = !window.isOnline;
-                };
-                this.event = document.createEvent('HTMLEvents');
-                this.event.initEvent('online', true, true);
-                this.event.name = 'online';
-                this.trigger = function () {
-                    console.log('trigger');
-                    this.counter++;
-                    window.dispatchEvent(this.event);
-                };
-            },
-            link: function ($scope, $element, $attrs) {
-                console.log('$element', $element.find('.toggle')[0]);
-                $element.find('.toggle').on('click', function () {
-                    console.log('click toggle');
+    app.component('online', {
+        template: '' +
+            '<button class="toggle">Click to toggle online</button>' +
+            '<button class="trigger">Click to trigger online</button>' +
+            '<p>Online: {{$ctrl.online}}, count: {{$ctrl.counter}}</p>' +
+        '',
+        controller: function ClickPostCtrl ($http, $element) {
+            this.counter = 0;
+            this.toggle = function () {
+                this.counter++;
+                window.isOnline = !window.isOnline;
+                console.log('toggle isOnline', window.isOnline);
+            };
+            this.event = document.createEvent('HTMLEvents');
+            this.event.initEvent('online', true, true);
+            this.event.name = 'online';
+            this.trigger = function () {
+                this.counter++;
+                window.dispatchEvent(this.event);
+            };
+            $element.find('button').on('click', function (event) {
+                const $button = angular.element(event.target);
+                if ($button.hasClass('toggle')) {
                     this.toggle();
-                });
-                $element.find('.trigger').on('click', function () {
-                    console.log('click trigge');
+                } else if ($button.hasClass('trigger')) {
                     this.trigger();
-                });
-            }
-        };
+                }
+            }.bind(this));
+        }
     });
 
 }(window.angular));

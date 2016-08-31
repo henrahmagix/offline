@@ -23,7 +23,7 @@ app.post('/post', function (req, res) {
     console.log('POST /');
     console.dir(req.body);
     res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('thanks');
+    res.end('thanks' + req.body.counter);
 });
 
 const host = '0.0.0.0';
