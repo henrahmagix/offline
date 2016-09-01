@@ -6,7 +6,7 @@
   "dependencies": {
     "angular": "1.5.8",
     "angular-mocks": "1.5.8",
-    "angular-cache": "4.6.0",
+    "angular-cache": "henrahmagix/angular-cache#b4f8f8ebc65e0679d7878013bdc7e96582817f34",
     "angular-offline": "henrahmagix/angular-offline#d476a3832e24c7a2e242b9c3f3401bec4c0f356a",
     "angular-route": "^1.5.8"
   }
