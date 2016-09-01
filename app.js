@@ -79,8 +79,6 @@
                         console.error(error.message);
                         if (error.message === offline.ERRORS.REQUEST_QUEUED) {
                             $rootScope.$on('offline-request:success', function ($event, response, request) {
-                                console.log(arguments);
-                                console.log('process request success', counter, request.data.counter, request);
                                 if (request.data.counter === counter) {
                                     return dataResolve(response.data);
                                 }
