@@ -6,6 +6,12 @@
         'offline'
     ]);
 
+    app.constant('CONFIG', {
+        OFFLINE: {
+            STORAGE_MODE: 'localStorage'
+        }
+    });
+
     app.config(function (
         $provide,
         $routeProvider,
@@ -24,10 +30,12 @@
     app.run(function (
         $http,
         CacheFactory,
-        offline
+        offline,
+        CONFIG
     ) {
-        $http.defaults.cache = CacheFactory.createCache('offline.get', {storageMode: 'localStorage'});
-        offline.stackCache = CacheFactory.createCache('offline.post', {storageMode: 'localStorage'});
+        offline.stackCache = CacheFactory.createCache('offline.post', {
+            storageMode: CONFIG.OFFLINE.STORAGE_MODE
+        });
         offline.start($http);
     });
 
@@ -63,7 +71,6 @@
 
                     .then(function (response) {
                         console.log('post success', counter, response);
-                        // this.result = response.data;
                         dataResolve(response.data);
                     }.bind(this))
 
